@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-#[cfg(all(target_os = "linux", feature = "linux-pkg-config"))]
+#[cfg(all(unix, not(target_os = "macos"), feature = "linux-pkg-config"))]
 fn link_pkg_config(name: &str) -> Vec<PathBuf> {
     let lib = pkg_config::probe_library(name)
         .expect(format!(
@@ -107,12 +107,12 @@ fn link_homebrew_m1(name: &str) -> PathBuf {
     include
 }
 
-#[cfg(all(target_os = "linux", feature = "linux-pkg-config"))]
+#[cfg(all(unix, not(target_os = "macos"), feature = "linux-pkg-config"))]
 fn find_package(name: &str) -> Vec<PathBuf> {
     return link_pkg_config(name);
 }
 
-#[cfg(not(all(target_os = "linux", feature = "linux-pkg-config")))]
+#[cfg(not(all(unix, target_os = "macos"), feature = "linux-pkg-config")))]
 fn find_package(name: &str) -> Vec<PathBuf> {
     if let Ok(vcpkg_root) = std::env::var("VCPKG_ROOT") {
         vec![link_vcpkg(vcpkg_root.into(), name)]
