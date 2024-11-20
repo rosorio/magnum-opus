@@ -112,16 +112,6 @@ fn find_package(name: &str) -> Vec<PathBuf> {
     return link_pkg_config(name);
 }
 
-#[cfg(not(all(unix, target_os = "macos"), feature = "linux-pkg-config")))]
-fn find_package(name: &str) -> Vec<PathBuf> {
-    if let Ok(vcpkg_root) = std::env::var("VCPKG_ROOT") {
-        vec![link_vcpkg(vcpkg_root.into(), name)]
-    } else {
-        // Try using homebrew
-        vec![link_homebrew_m1(name)]
-    }
-}
-
 fn generate_bindings(ffi_header: &Path, include_paths: &[PathBuf], ffi_rs: &Path) {
     #[derive(Debug)]
     struct ParseCallbacks;
